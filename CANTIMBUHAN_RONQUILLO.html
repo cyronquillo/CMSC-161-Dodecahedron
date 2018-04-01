@@ -176,6 +176,24 @@
 
 			var shininess = document.getElementById("material_shininess_input").value;
 
+			var l_direct = [
+				document.getElementById("light_direction_x_input").value,
+				document.getElementById("light_direction_y_input").value,
+				document.getElementById("light_direction_z_input").value,
+			];
+
+			var cp = [
+				document.getElementById("camera_position_x_input").value,
+				document.getElementById("camera_position_y_input").value,
+				document.getElementById("camera_position_z_input").value,
+			];
+
+			var ep = [
+				document.getElementById("eye_position_x_input").value,
+				document.getElementById("eye_position_y_input").value,
+				document.getElementById("eye_position_z_input").value,
+			];
+			
 			var canvas = document.getElementById("c");
 			var gl = initializeWebGL(canvas);
 
@@ -311,7 +329,12 @@
 
 		  	var viewMatrix = mat4.create();
 		  	var uView = gl.getUniformLocation(program,"uView");
-		  	mat4.lookAt(viewMatrix,[3,3,7],[0,0,0],[0,1,0]);
+		  	mat4.lookAt(viewMatrix,
+						[ep[0], ep[1], ep[2]],
+						[cp[0], cp[1], cp[2]],
+			  			[0,1,0]
+			);
+			//(viewMatrix, lookAtPoint, eyePoint, upVector);
 		  	gl.uniformMatrix4fv(uView,false,viewMatrix);
 
 		  	var projectionMatrix = mat4.create();
@@ -322,10 +345,10 @@
 
 		  	//set-up light and material parameters
 		  	var uLightDirection= gl.getUniformLocation(program,"uLightDirection");
-			gl.uniform3f(uLightDirection,-1.0,-2.5,-5.0);
+			gl.uniform3f(uLightDirection,l_direct[0], l_direct[1], l_direct[2]);
 
 			var uEyePosition= gl.getUniformLocation(program,"uEyePosition");
-			gl.uniform3f(uEyePosition,3,3,7);
+			gl.uniform3f(uEyePosition,4,5,10);
 
 			/*
 				note: color values are divided by 255 because the range in the interface
@@ -472,30 +495,60 @@
 		<output name="material_shininess" id="material_shininess_output">100</output>
 		<br><br>
 		
+		
+		<label for="light_direction_x">Light's Direction (X)</label>
+		<input type="range" id="light_direction_x_input" min="-20" value="-1" max="20" step="0.5" oninput = "light_direction_x_output.value = light_direction_x_input.value; main()">
+		<output name="light_direction_x" id = "light_direction_x_output" value= "light_direction_x_output.value">-1.0</output>
+		<br>
+
+		<label for="light_direction_y">Light's Direction (Y)</label>
+		<input type="range" id="light_direction_y_input" min="-20" value="-2.5" max="20"  step="0.5" oninput = "light_direction_y_output.value = light_direction_y_input.value; main()">
+		<output name="light_direction_y" id="light_direction_y_output" value= "light_direction_y_output.value">-2.5</output>		
+		<br>
+		
+		<label for="light_direction_z">Light's Direction (Z)</label>
+		<input type="range" id="light_direction_z_input" min="-20" value="-5.0" max="20"  step="0.5" oninput = "light_direction_z_output.value = light_direction_z_input.value; main()">
+		<output name="light_direction_z" id="light_direction_z_output" >-5.0</output>
+		<br><br>
+
+
+
+		<label for="camera_position_x">Camera Position (X)</label>
+		<input type="range" id="camera_position_x_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_x_output.value = camera_position_x_input.value; main()">
+		<output name="camera_position_x" id="camera_position_x_output" value="camera_position_x_output.value">0</output>
+		<br>
+		
+		<label for="camera_position_y">Camera Position (Y)</label>
+		<input type="range" id="camera_position_y_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_y_output.value = camera_position_y_input.value; main()">
+		<output name="camera_position_y" id="camera_position_y_output" value="camera_position_y_output.value">0</output>
+		<br>
+		
+		<label for="camera_position_z">Camera Position (Z)</label>
+		<input type="range" id="camera_position_z_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_z_output.value = camera_position_z_input.value; main()">
+		<output name="camera_position_z" id="camera_position_z_output">0</output>
+		<br><br>
+
+
+		
+		<label for="eye_position_x">Eye Position (X)</label>
+		<input type="range" id="eye_position_x_input" min="-20" value="3" max="20" step="0.5" oninput="eye_position_x_output.value = eye_position_x_input.value; main()">
+		<output name="eye_position_x" id="eye_position_x_output" value="eye_position_x_output.value">3</output>
+		<br>
+		
+		<label for="eye_position_y">Eye Position (Y)</label>
+		<input type="range" id="eye_position_y_input" min="-20" value="3" max="20" step="0.5" oninput="eye_position_y_output.value = eye_position_y_input.value; main()">
+		<output name="eye_position_y" id="eye_position_y_output" value="eye_position_y_output.value">3</output>
+		<br>
+		
+		<label for="eye_position_z">Eye Position (Z)</label>
+		<input type="range" id="eye_position_z_input" min="-20" value="7" max="20" step="0.5" oninput="eye_position_z_output.value = eye_position_z_input.value; main()">
+		<output name="eye_position_z" id="eye_position_z_output">7</output>
+		<br><br>
+
+		
 	</form>
 
-	<!--
-	<label for="light_direction_x">Light's Direction (X)</label>
-	<input type="range" id="light_direction_x" min="0" value="0" max="255">
-	<label for="light_direction_y">Light's Direction (Y)</label>
-	<input type="range" id="light_direction_y" min="0" value="0" max="255">
-	<label for="light_direction_z">Light's Direction (Z)</label>
-	<input type="range" id="light_direction_z" min="0" value="0" max="255">
-
-	<label for="camera_position_x">Camera Position Color (X)</label>
-	<input type="range" id="camera_position_x" min="0" value="0" max="255">
-	<label for="camera_position_y">Camera Position Color (Y)</label>
-	<input type="range" id="camera_position_y" min="0" value="0" max="255">
-	<label for="camera_position_z">Camera Position Color (Z)</label>
-	<input type="range" id="camera_position_z" min="0" value="0" max="255">
-
-	<label for="eye_position_x">Eye Position Color (X)</label>
-	<input type="range" id="eye_position_x" min="0" value="0" max="255">
-	<label for="eye_position_y">Eye Position Color (Y)</label>
-	<input type="range" id="eye_position_y" min="0" value="0" max="255">
-	<label for="eye_position_z">Eye Position Color (Z)</label>
-	<input type="range" id="eye_position_z" min="0" value="0" max="255">
-	-->
+	
 
 </body>
 </html>
