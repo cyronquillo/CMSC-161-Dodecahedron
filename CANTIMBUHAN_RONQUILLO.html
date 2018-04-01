@@ -2,7 +2,6 @@
 	Name: Cyrez B. Ronquillo
 		  Mary Cris Joy C. Cantimbuhan
 	CMSC 161 B-1L
-
 	Reference/s used: https://github.com/nickdesaulniers/prims/blob/master/dodecahedron.js
  -->
 <!DOCTYPE html>
@@ -12,74 +11,59 @@
 	<title>Phong's Light Reflection Model using a Dodecahedron</title>
 	<script type="x-shader/x-vertex" id="vshader">
 		attribute vec3 aPosition;
-
 		attribute vec3 aNormal;
-
 		uniform mat4 uModel;
 		uniform mat4 uView;
 		uniform mat4 uProjection;
 		uniform mat4 uNormal;
-
 		uniform vec3 uLightDirection;
 		uniform vec3 uEyePosition;    // camera position
-
         // Light Color Properties
 		uniform vec3 uLightAmbient;
 		uniform vec3 uLightDiffuse;
 		uniform vec3 uLightSpecular;
-
         // Material Color Properties
 		uniform vec3 uMaterialAmbient;
 		uniform vec3 uMaterialDiffuse;
 		uniform vec3 uMaterialSpecular;
 		uniform float uShininess;
-
         // Flags
 		uniform bool uEnableAmbient;
 		uniform bool uEnableDiffuse;
 		uniform bool uEnableSpecular;
-
 		varying vec4 vColor;
 		void main() {
 			gl_Position = uProjection * uView * uModel * vec4(aPosition,1.0);
-
 			vec3 vertexPosition = vec3(uModel * vec4(aPosition,1.0));
 			vec3 ambientColor = vec3(0.0,0.0,0.0);
 			vec3 diffuseColor = vec3(0.0,0.0,0.0);
 			vec3 specularColor = vec3(0.0,0.0,0.0);
-
 			vec3 corrected_aNormal = vec3(uNormal * vec4(aNormal,1.0));
 			vec3 normalized_aNormal = normalize(corrected_aNormal);
-
 			vec3 normalized_uLightDirection = normalize(uLightDirection);
 			vec3 eyeDirection = uEyePosition - vertexPosition;           // vector that contains the distance and direction of the eye position from the object/vertex
 			vec3 normalized_eyeDirection = normalize(eyeDirection);
-
             // compute for reflection direction of an incident vector
             vec3 reflectDirection = reflect(
                                         normalized_uLightDirection,     // normalized light direction vector - from light to surface
                                         normalized_aNormal              // normal at a vertex in the surface
                                     );
 			vec3 normalized_reflectDirection = normalize(reflectDirection);  // normalize computed reflection direction
-
             //ambient
 			if(uEnableAmbient) {
 			ambientColor = uLightAmbient * uMaterialAmbient;
 			}
-
 			//diffuse
 			if(uEnableDiffuse) {
     			float lambertCoefficient = max(dot(-normalized_uLightDirection,normalized_aNormal),0.0);         // negative lambertCoefficient is automatically converted to 0
     			diffuseColor =  uLightDiffuse * uMaterialDiffuse * lambertCoefficient;
 			}
-
 			//specular
 			if(uEnableSpecular) {
     			float specularCoefficient = max(dot(normalized_reflectDirection,normalized_eyeDirection),0.0);   // negative specularCoefficient is automatically converted to 0
     			specularCoefficient = pow(specularCoefficient,uShininess);
     			specularColor =  uLightSpecular * uMaterialSpecular * specularCoefficient;
 			}
-
 			vColor = vec4(ambientColor+diffuseColor+specularColor,1.0);
 		}
 	</script>
@@ -102,47 +86,40 @@
 				document.getElementById("light_ambient_g_input").value,
 				document.getElementById("light_ambient_b_input").value
 			];
-
 			//rgb for diffuse light color
 			var ld = [
 				document.getElementById("light_diffuse_r_input").value,
 				document.getElementById("light_diffuse_g_input").value,
 				document.getElementById("light_diffuse_b_input").value
 			];
-
 			//rgb for specular light color
 			var ls = [
 				document.getElementById("light_specular_r_input").value,
 				document.getElementById("light_specular_g_input").value,
 				document.getElementById("light_specular_b_input").value
 			];
-
 			//rgb for ambient material color
 			var ma = [
 				document.getElementById("material_ambient_r_input").value,
 				document.getElementById("material_ambient_g_input").value,
 				document.getElementById("material_ambient_b_input").value
 			];
-
 			//rgb for diffuse material color
 			var md = [
 				document.getElementById("material_diffuse_r_input").value,
 				document.getElementById("material_diffuse_g_input").value,
 				document.getElementById("material_diffuse_b_input").value
 			];
-
 			//rgb for specular material color
 			var ms = [
 				document.getElementById("material_specular_r_input").value,
 				document.getElementById("material_specular_g_input").value,
 				document.getElementById("material_specular_b_input").value
 			];
-
 			//for enabling/disabling ambient, diffuse, specular lighting
 			var al = document.getElementById("ambient_lighting").checked
 			var dl = document.getElementById("diffuse_lighting").checked
 			var sl = document.getElementById("specular_lighting").checked
-
 			var els;
 			if(al) {
 				els = document.getElementsByClassName("ambient");
@@ -153,7 +130,6 @@
 				for(var i; i < els.length; i++)
 					els[i].removeAttribute("disabled");
 			}
-
 			if(dl) {
 				els = document.getElementsByClassName("diffuse");
 				for(var i; i < els.length; i++)
@@ -163,7 +139,6 @@
 				for(var i; i < els.length; i++)
 					els[i].removeAttribute("disabled");
 			}
-
 			if(sl) {
 				els = document.getElementsByClassName("specular");
 				for(var i; i < els.length; i++)
@@ -173,21 +148,17 @@
 				for(var i; i < els.length; i++)
 					els[i].removeAttribute("disabled");
 			}
-
 			var shininess = document.getElementById("material_shininess_input").value;
-
 			var l_direct = [
 				document.getElementById("light_direction_x_input").value,
 				document.getElementById("light_direction_y_input").value,
 				document.getElementById("light_direction_z_input").value,
 			];
-
 			var cp = [
 				document.getElementById("camera_position_x_input").value,
 				document.getElementById("camera_position_y_input").value,
 				document.getElementById("camera_position_z_input").value,
 			];
-
 			var ep = [
 				document.getElementById("eye_position_x_input").value,
 				document.getElementById("eye_position_y_input").value,
@@ -196,16 +167,13 @@
 			
 			var canvas = document.getElementById("c");
 			var gl = initializeWebGL(canvas);
-
 			var vertexShader = initializeShader(gl,"vshader");
 			var fragmentShader = initializeShader(gl, "fshader");
 			var program = initializeProgram(gl,vertexShader,fragmentShader);
 			gl.useProgram(program);
-
 			var phi = (1 + Math.sqrt(5)) / 2;
 			var b = 1 / phi;
 			var c = 2 - phi;
-
 			// exact vertices of the dodecahedron.
 			// partial vertices because we need to generate the vertices needed for drawing using a triangle fan
 			var partial_vertices = [
@@ -222,7 +190,6 @@
 				-b,  b, -b, 	-c,  0, -1, 	-b, -b, -b, 	-1, -c,  0, 	-1,  c,  0,
 				-b, -b,  b, 	-c,  0,  1, 	-b,  b,  b, 	-1,  c,  0, 	-1, -c,  0
 			];
-
 			// will contain the actual vertices for drawing
 			var vertices = []
 			for (var i = 0; i < partial_vertices.length; i += 15) {
@@ -253,11 +220,9 @@
 				vertices.push.apply(vertices, center);
 			}
 			
-
 			// generate the indices 
 			var indices = new Array(vertices.length / 3);
 			for (var i = 0; i < indices.length; ++i) indices[i] = i;
-
 			function sub(a, b) { return [a[0] - b[0], a[1] - b[1], a[2] - b[2]]; };
 			function cross(a, b) {
 				return [
@@ -271,7 +236,6 @@
 				return [a[0] / length, a[1] / length, a[2] / length];
 			};
 			
-
 			// generate the normals of the dodecahedron
 			var normals = [];
 			for (var i = 0; i < vertices.length; i += 9) {
@@ -295,7 +259,6 @@
 		  	gl.enableVertexAttribArray(aPosition);
 		  	//unbind buffer to ARRAY_BUFFER POINTER
 		  	gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
 		  	//buffer creation
 		  	var normalBuffer = gl.createBuffer();
 		  	gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
@@ -306,7 +269,6 @@
 		  	gl.enableVertexAttribArray(aNormal);
 		  	//unbind buffer to ARRAY_BUFFER POINTER
 		  	gl.bindBuffer(gl.ARRAY_BUFFER, null);
-
 			
 			//buffer creation
 		  	var indexBuffer = gl.createBuffer();
@@ -314,19 +276,16 @@
 		  	gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint8Array(indices), gl.STATIC_DRAW);
 		  	//unbind buffer to gl.ELEMENT_ARRAY_BUFFER POINTER
 		  	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
-
 		  	//set-up model matrix, view matrix, and projection matrix
 		  	var modelMatrix = mat4.create();
 		  	var uModel = gl.getUniformLocation(program,"uModel");
 		  		gl.uniformMatrix4fv(uModel,false,modelMatrix);
-
 		  	//add normal matrix
 		  	var normalMatrix = mat4.create();
 		  	var uNormal = gl.getUniformLocation(program,"uNormal");
 		  	mat4.invert(normalMatrix,modelMatrix);
 		  	mat4.transpose(normalMatrix,normalMatrix);
 		  	gl.uniformMatrix4fv(uNormal,false,normalMatrix);
-
 		  	var viewMatrix = mat4.create();
 		  	var uView = gl.getUniformLocation(program,"uView");
 		  	mat4.lookAt(viewMatrix,
@@ -336,59 +295,42 @@
 			);
 			//(viewMatrix, lookAtPoint, eyePoint, upVector);
 		  	gl.uniformMatrix4fv(uView,false,viewMatrix);
-
 		  	var projectionMatrix = mat4.create();
 		  	var uProjection = gl.getUniformLocation(program,"uProjection");
 		  	mat4.perspective(projectionMatrix,glMatrix.toRadian(30),canvas.width/canvas.height,1,100);
 		  	gl.uniformMatrix4fv(uProjection,false,projectionMatrix);
-
-
 		  	//set-up light and material parameters
 		  	var uLightDirection= gl.getUniformLocation(program,"uLightDirection");
 			gl.uniform3f(uLightDirection,l_direct[0], l_direct[1], l_direct[2]);
-
 			var uEyePosition= gl.getUniformLocation(program,"uEyePosition");
-			gl.uniform3f(uEyePosition,4,5,10);
-
+			gl.uniform3f(uEyePosition,ep[0], ep[1], ep[2]);
 			/*
 				note: color values are divided by 255 because the range in the interface
 				is 0-255.
 			*/
-
 		  	// Material Color Properties
 			var uMaterialAmbient = gl.getUniformLocation(program,"uMaterialAmbient");
 		  	gl.uniform3f(uMaterialAmbient, ma[0] / 255, ma[1] / 255, ma[2] / 255);
-
             var uMaterialDiffuse = gl.getUniformLocation(program,"uMaterialDiffuse");
             gl.uniform3f(uMaterialDiffuse, md[0] / 255, md[1] / 255, md[2] / 255);
-
             var uMaterialSpecular = gl.getUniformLocation(program,"uMaterialSpecular");
 		  	gl.uniform3f(uMaterialSpecular, ms[0] / 255, ms[1] / 255, ms[2] / 255);
-
-
             // Light Color Properties
 			var uLightAmbient = gl.getUniformLocation(program,"uLightAmbient");
 			gl.uniform3f(uLightAmbient, la[0] / 255, la[1] / 255, la[2] / 255);
-
             var uLightDiffuse = gl.getUniformLocation(program,"uLightDiffuse");
             gl.uniform3f(uLightDiffuse, ld[0] / 255, ld[1] / 255, ld[2] / 255);
-
 			var uLightSpecular = gl.getUniformLocation(program,"uLightSpecular");
 			gl.uniform3f(uLightSpecular, ls[0] / 255, ls[1] / 255, ls[2] / 255);
-
 			var uShininess = gl.getUniformLocation(program,"uShininess");
             gl.uniform1f(uShininess, shininess / 100);
-
             // Flags
 			var uEnableAmbient = gl.getUniformLocation(program,"uEnableAmbient");
 			gl.uniform1i(uEnableAmbient, al);
-
 			var uEnableDiffuse = gl.getUniformLocation(program,"uEnableDiffuse");
             gl.uniform1i(uEnableDiffuse, dl);
-
 			var uEnableSpecular = gl.getUniformLocation(program,"uEnableSpecular");
             gl.uniform1i(uEnableSpecular, sl);
-
 		  	//draw scene
 			gl.clearColor(0, 0, 0, 1);
 			gl.enable(gl.DEPTH_TEST);
@@ -402,151 +344,165 @@
 	<canvas id="c" width="400" height="400" style="border: 1px black solid; ">
 	</canvas>
 
-	<form name="inputForm" style="position: absolute; left: 420px; top: 10px; column-count: 2; column-gap: 5px;">
-		<input type="checkbox" id="ambient_lighting" checked="true" onchange="main()">Ambient Lighting<br>
-		<input type="checkbox" id="diffuse_lighting" checked="true" onchange="main()">Diffuse Lighting<br>
-		<input type="checkbox" id="specular_lighting" checked="true" onchange="main()">Specular Lighting<br>
 
-		<!-- Light Color -->
-		<h4>Light</h4>
-		<label for="light_ambient_r">Ambient Color (R)</label>
-		<input type="range" id="light_ambient_r_input" class="ambient" min="0" value="77" max="255" oninput="light_ambient_r_output.value = light_ambient_r_input.value; main()">
-		<output name="light_ambient_r" id="light_ambient_r_output">77</output><br>
+	<table style="position: absolute; left: 31%; top: 1%; border-collapse: collapse; width: 68%;">
+		<tr>
+			<td style="padding: 5px; border: 1px #28b463 solid;"><h4>Light</h4></td>
+			<td style="padding: 5px; border: 1px #28b463 solid;"><h4>Material</h4></td>
+		</tr>
+		<tr>
+			<td style="padding: 5px; border: 1px #28b463 solid;">
+				<form>
+					<!-- Light Color -->
+					<label for="light_ambient_r">Ambient Color (R)</label>
+					<input type="range" id="light_ambient_r_input" class="ambient" min="0" value="77" max="255" oninput="light_ambient_r_output.value = light_ambient_r_input.value; main()">
+					<output name="light_ambient_r" id="light_ambient_r_output">77</output><br>
 
-		<label for="light_ambient_g">Ambient Color (G)</label>
-		<input type="range" id="light_ambient_g_input" class="ambient" min="0" value="77" max="255" oninput="light_ambient_g_output.value = light_ambient_g_input.value; main()">
-		<output name="light_ambient_g" id="light_ambient_g_output">77</output><br>
+					<label for="light_ambient_g">Ambient Color (G)</label>
+					<input type="range" id="light_ambient_g_input" class="ambient" min="0" value="77" max="255" oninput="light_ambient_g_output.value = light_ambient_g_input.value; main()">
+					<output name="light_ambient_g" id="light_ambient_g_output">77</output><br>
 
-		<label for="light_ambient_b">Ambient Color (B)</label>
-		<input type="range" id="light_ambient_b_input" class="ambient" min="0" value="77" max="255" oninput="light_ambient_b_output.value = light_ambient_b_input.value; main()">
-		<output name="light_ambient_b" id="light_ambient_b_output">77</output><br>
-		<br>
+					<label for="light_ambient_b">Ambient Color (B)</label>
+					<input type="range" id="light_ambient_b_input" class="ambient" min="0" value="77" max="255" oninput="light_ambient_b_output.value = light_ambient_b_input.value; main()">
+					<output name="light_ambient_b" id="light_ambient_b_output">77</output><br>
+					<br>
 
-		<label for="light_diffuse_r">Diffuse Color (R)</label>
-		<input type="range" id="light_diffuse_r_input" class="diffuse" min="0" value="255" max="255" oninput="light_diffuse_r_output.value = light_diffuse_r_input.value; main()">
-		<output name="light_diffuse_r" id="light_diffuse_r_output">255</output><br>
+					<label for="light_diffuse_r">Diffuse Color (R)</label>
+					<input type="range" id="light_diffuse_r_input" class="diffuse" min="0" value="255" max="255" oninput="light_diffuse_r_output.value = light_diffuse_r_input.value; main()">
+					<output name="light_diffuse_r" id="light_diffuse_r_output">255</output><br>
 
-		<label for="light_diffuse_g">Diffuse Color (G)</label>
-		<input type="range" id="light_diffuse_g_input" class="diffuse" min="0" value="255" max="255" oninput="light_diffuse_g_output.value = light_diffuse_g_input.value; main()">
-		<output name="light_diffuse_g" id="light_diffuse_g_output">255</output><br>
+					<label for="light_diffuse_g">Diffuse Color (G)</label>
+					<input type="range" id="light_diffuse_g_input" class="diffuse" min="0" value="255" max="255" oninput="light_diffuse_g_output.value = light_diffuse_g_input.value; main()">
+					<output name="light_diffuse_g" id="light_diffuse_g_output">255</output><br>
 
-		<label for="light_diffuse_b">Diffuse Color (B)</label>
-		<input type="range" id="light_diffuse_b_input" class="diffuse" min="0" value="255" max="255" oninput="light_diffuse_b_output.value = light_diffuse_b_input.value; main()">
-		<output name="light_diffuse_b" id="light_diffuse_b_output">255</output><br>
-		<br>
+					<label for="light_diffuse_b">Diffuse Color (B)</label>
+					<input type="range" id="light_diffuse_b_input" class="diffuse" min="0" value="255" max="255" oninput="light_diffuse_b_output.value = light_diffuse_b_input.value; main()">
+					<output name="light_diffuse_b" id="light_diffuse_b_output">255</output><br>
+					<br>
 
-		<label for="light_specular_r">Specular Color (R)</label>
-		<input type="range" id="light_specular_r_input" class="specular" min="0" value="255" max="255" oninput="light_specular_r_output.value = light_specular_r_input.value; main()">
-		<output name="light_specular_r" id="light_specular_r_output">255</output><br>
+					<label for="light_specular_r">Specular Color (R)</label>
+					<input type="range" id="light_specular_r_input" class="specular" min="0" value="255" max="255" oninput="light_specular_r_output.value = light_specular_r_input.value; main()">
+					<output name="light_specular_r" id="light_specular_r_output">255</output><br>
 
-		<label for="light_specular_g">Specular Color (G)</label>
-		<input type="range" id="light_specular_g_input" class="specular" min="0" value="255" max="255" oninput="light_specular_g_output.value = light_specular_g_input.value; main()">
-		<output name="light_specular_g" id="light_specular_g_output">255</output><br>
+					<label for="light_specular_g">Specular Color (G)</label>
+					<input type="range" id="light_specular_g_input" class="specular" min="0" value="255" max="255" oninput="light_specular_g_output.value = light_specular_g_input.value; main()">
+					<output name="light_specular_g" id="light_specular_g_output">255</output><br>
 
-		<label for="light_specular_b">Specular Color (B)</label>
-		<input type="range" id="light_specular_b_input" class="specular" min="0" value="255" max="255" oninput="light_specular_b_output.value = light_specular_b_input.value; main()">
-		<output name="light_specular_b" id="light_specular_b_output">255</output><br>
-		<!-- <hr style="width: 50%"> -->
-		
-		<h4>Material</h4>
-		<!-- Material Color -->
-		<label for="material_ambient_r">Ambient Color (R)</label>
-		<input type="range" id="material_ambient_r_input" class="ambient" min="0" value="0" max="255" oninput="material_ambient_r_output.value = material_ambient_r_input.value; main()">
-		<output name="material_ambient_r" id="material_ambient_r_output">0</output><br>
+					<label for="light_specular_b">Specular Color (B)</label>
+					<input type="range" id="light_specular_b_input" class="specular" min="0" value="255" max="255" oninput="light_specular_b_output.value = light_specular_b_input.value; main()">
+					<output name="light_specular_b" id="light_specular_b_output">255</output>
+				</form>
+			</td>
+			<td style="padding: 5px; border: 1px #28b463 solid;">
+				<form>
+					<label for="material_ambient_r">Ambient Color (R)</label>
+					<input type="range" id="material_ambient_r_input" class="ambient" min="0" value="0" max="255" oninput="material_ambient_r_output.value = material_ambient_r_input.value; main()">
+					<output name="material_ambient_r" id="material_ambient_r_output">0</output><br>
 
-		<label for="material_ambient_g">Ambient Color (G)</label>
-		<input type="range" id="material_ambient_g_input" class="ambient" min="0" value="127" max="255" oninput="material_ambient_g_output.value = material_ambient_g_input.value; main()">
-		<output name="material_ambient_g" id="material_ambient_g_output">127</output><br>
+					<label for="material_ambient_g">Ambient Color (G)</label>
+					<input type="range" id="material_ambient_g_input" class="ambient" min="0" value="127" max="255" oninput="material_ambient_g_output.value = material_ambient_g_input.value; main()">
+					<output name="material_ambient_g" id="material_ambient_g_output">127</output><br>
 
-		<label for="material_ambient_b">Ambient Color (B)</label>
-		<input type="range" id="material_ambient_b_input" class="ambient" min="0" value="0" max="255" oninput="material_ambient_b_output.value = material_ambient_b_input.value; main()">
-		<output name="material_ambient_b" id="material_ambient_b_output">0</output><br>
-		<br>
-		
-		<label for="material_diffuse_r">Diffuse Color (R)</label>
-		<input type="range" id="material_diffuse_r_input" class="diffuse" min="0" value="0" max="255" oninput="material_diffuse_r_output.value = material_diffuse_r_input.value; main()">
-		<output name="material_diffuse_r" id="material_diffuse_r_output">0</output><br>
+					<label for="material_ambient_b">Ambient Color (B)</label>
+					<input type="range" id="material_ambient_b_input" class="ambient" min="0" value="0" max="255" oninput="material_ambient_b_output.value = material_ambient_b_input.value; main()">
+					<output name="material_ambient_b" id="material_ambient_b_output">0</output><br>
+					<br>
+					
+					<label for="material_diffuse_r">Diffuse Color (R)</label>
+					<input type="range" id="material_diffuse_r_input" class="diffuse" min="0" value="0" max="255" oninput="material_diffuse_r_output.value = material_diffuse_r_input.value; main()">
+					<output name="material_diffuse_r" id="material_diffuse_r_output">0</output><br>
 
-		<label for="material_diffuse_g">Diffuse Color (G)</label>
-		<input type="range" id="material_diffuse_g_input" class="diffuse" min="0" value="255" max="255" oninput="material_diffuse_g_output.value = material_diffuse_g_input.value; main()">
-		<output name="material_diffuse_g" id="material_diffuse_g_output">255</output><br>
+					<label for="material_diffuse_g">Diffuse Color (G)</label>
+					<input type="range" id="material_diffuse_g_input" class="diffuse" min="0" value="255" max="255" oninput="material_diffuse_g_output.value = material_diffuse_g_input.value; main()">
+					<output name="material_diffuse_g" id="material_diffuse_g_output">255</output><br>
 
-		<label for="material_diffuse_b">Diffuse Color (B)</label>
-		<input type="range" id="material_diffuse_b_input" class="diffuse" min="0" value="0" max="255" oninput="material_diffuse_b_output.value = material_diffuse_b_input.value; main()">
-		<output name="material_diffuse_b" id="material_diffuse_b_output">0</output><br>
-		<br>
+					<label for="material_diffuse_b">Diffuse Color (B)</label>
+					<input type="range" id="material_diffuse_b_input" class="diffuse" min="0" value="0" max="255" oninput="material_diffuse_b_output.value = material_diffuse_b_input.value; main()">
+					<output name="material_diffuse_b" id="material_diffuse_b_output">0</output><br>
+					<br>
 
-		<label for="material_specular_r">Specular Color (R)</label>
-		<input type="range" id="material_specular_r_input" class="specular" min="0" value="229" max="255" oninput="material_specular_r_output.value = material_specular_r_input.value; main()">
-		<output name="material_specular_r" id="material_specular_r_output">229</output><br>
+					<label for="material_specular_r">Specular Color (R)</label>
+					<input type="range" id="material_specular_r_input" class="specular" min="0" value="229" max="255" oninput="material_specular_r_output.value = material_specular_r_input.value; main()">
+					<output name="material_specular_r" id="material_specular_r_output">229</output><br>
 
-		<label for="material_specular_g">Specular Color (G)</label>
-		<input type="range" id="material_specular_g_input" class="specular" min="0" value="255" max="255" oninput="material_specular_g_output.value = material_specular_g_input.value; main()">
-		<output name="material_specular_g" id="material_specular_g_output">255</output><br>
+					<label for="material_specular_g">Specular Color (G)</label>
+					<input type="range" id="material_specular_g_input" class="specular" min="0" value="255" max="255" oninput="material_specular_g_output.value = material_specular_g_input.value; main()">
+					<output name="material_specular_g" id="material_specular_g_output">255</output><br>
 
-		<label for="material_specular_b">Specular Color (B)</label>
-		<input type="range" id="material_specular_b_input" class="specular" min="0" value="229" max="255" oninput="material_specular_b_output.value = material_specular_b_input.value; main()">
-		<output name="material_specular_b" id="material_specular_b_output">229</output><br>
-		<br>
-		
-		<!-- Material Shininess -->
-		<label for="material_shininess">Material's Shininess Factor</label>
-		<input type="range" id="material_shininess_input" min="0" value="100" max="100" oninput="material_shininess_output.value = material_shininess_input.value; main()">
-		<output name="material_shininess" id="material_shininess_output">100</output>
-		<br><br>
-		
-		
-		<label for="light_direction_x">Light's Direction (X)</label>
-		<input type="range" id="light_direction_x_input" min="-20" value="-1" max="20" step="0.5" oninput = "light_direction_x_output.value = light_direction_x_input.value; main()">
-		<output name="light_direction_x" id = "light_direction_x_output" value= "light_direction_x_output.value">-1.0</output>
-		<br>
+					<label for="material_specular_b">Specular Color (B)</label>
+					<input type="range" id="material_specular_b_input" class="specular" min="0" value="229" max="255" oninput="material_specular_b_output.value = material_specular_b_input.value; main()">
+					<output name="material_specular_b" id="material_specular_b_output">229</output><br>
 
-		<label for="light_direction_y">Light's Direction (Y)</label>
-		<input type="range" id="light_direction_y_input" min="-20" value="-2.5" max="20"  step="0.5" oninput = "light_direction_y_output.value = light_direction_y_input.value; main()">
-		<output name="light_direction_y" id="light_direction_y_output" value= "light_direction_y_output.value">-2.5</output>		
-		<br>
-		
-		<label for="light_direction_z">Light's Direction (Z)</label>
-		<input type="range" id="light_direction_z_input" min="-20" value="-5.0" max="20"  step="0.5" oninput = "light_direction_z_output.value = light_direction_z_input.value; main()">
-		<output name="light_direction_z" id="light_direction_z_output" >-5.0</output>
-		<br><br>
+					<!-- Material Shininess -->
+					<label for="material_shininess">Shininess Factor</label>
+					<input type="range" id="material_shininess_input" min="0" value="100" max="100" oninput="material_shininess_output.value = material_shininess_input.value; main()">
+					<output name="material_shininess" id="material_shininess_output">100</output>
+				</form>
+			</td>
+		</tr>
+	</table>
 
-
-
-		<label for="camera_position_x">Camera Position (X)</label>
-		<input type="range" id="camera_position_x_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_x_output.value = camera_position_x_input.value; main()">
-		<output name="camera_position_x" id="camera_position_x_output" value="camera_position_x_output.value">0</output>
-		<br>
-		
-		<label for="camera_position_y">Camera Position (Y)</label>
-		<input type="range" id="camera_position_y_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_y_output.value = camera_position_y_input.value; main()">
-		<output name="camera_position_y" id="camera_position_y_output" value="camera_position_y_output.value">0</output>
-		<br>
-		
-		<label for="camera_position_z">Camera Position (Z)</label>
-		<input type="range" id="camera_position_z_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_z_output.value = camera_position_z_input.value; main()">
-		<output name="camera_position_z" id="camera_position_z_output">0</output>
-		<br><br>
-
-
-		
-		<label for="eye_position_x">Eye Position (X)</label>
-		<input type="range" id="eye_position_x_input" min="-20" value="3" max="20" step="0.5" oninput="eye_position_x_output.value = eye_position_x_input.value; main()">
-		<output name="eye_position_x" id="eye_position_x_output" value="eye_position_x_output.value">3</output>
-		<br>
-		
-		<label for="eye_position_y">Eye Position (Y)</label>
-		<input type="range" id="eye_position_y_input" min="-20" value="3" max="20" step="0.5" oninput="eye_position_y_output.value = eye_position_y_input.value; main()">
-		<output name="eye_position_y" id="eye_position_y_output" value="eye_position_y_output.value">3</output>
-		<br>
-		
-		<label for="eye_position_z">Eye Position (Z)</label>
-		<input type="range" id="eye_position_z_input" min="-20" value="7" max="20" step="0.5" oninput="eye_position_z_output.value = eye_position_z_input.value; main()">
-		<output name="eye_position_z" id="eye_position_z_output">7</output>
-		<br><br>
-
-		
+	<form style="position: absolute; left: 31%; top: 57%;">
+		<input type="checkbox" id="ambient_lighting" checked="true" onchange="main()">Ambient Lighting &nbsp;
+		<input type="checkbox" id="diffuse_lighting" checked="true" onchange="main()">Diffuse Lighting &nbsp;
+		<input type="checkbox" id="specular_lighting" checked="true" onchange="main()">Specular Lighting
 	</form>
+
+	<table style="position: absolute; top: 65%; width: 99%; border-collapse: collapse;">
+		<tr>
+			<td style="padding: 5px; border: 1px #28b463 solid;">
+				<form>
+					<label for="light_direction_x">Light's Direction (X)</label>
+					<input type="range" id="light_direction_x_input" min="-20" value="-1" max="20" step="0.5" oninput = "light_direction_x_output.value = light_direction_x_input.value; main()">
+					<output name="light_direction_x" id = "light_direction_x_output" value= "light_direction_x_output.value">-1.0</output>
+					<br>
+
+					<label for="light_direction_y">Light's Direction (Y)</label>
+					<input type="range" id="light_direction_y_input" min="-20" value="-2.5" max="20"  step="0.5" oninput = "light_direction_y_output.value = light_direction_y_input.value; main()">
+					<output name="light_direction_y" id="light_direction_y_output" value= "light_direction_y_output.value">-2.5</output>		
+					<br>
+					
+					<label for="light_direction_z">Light's Direction (Z)</label>
+					<input type="range" id="light_direction_z_input" min="-20" value="-5.0" max="20"  step="0.5" oninput = "light_direction_z_output.value = light_direction_z_input.value; main()">
+					<output name="light_direction_z" id="light_direction_z_output" >-5.0</output>				
+				</form>
+			</td>
+			<td style="padding: 5px; border: 1px #28b463 solid;">
+				<form>
+					<label for="camera_position_x">Camera Position (X)</label>
+					<input type="range" id="camera_position_x_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_x_output.value = camera_position_x_input.value; main()">
+					<output name="camera_position_x" id="camera_position_x_output" value="camera_position_x_output.value">0</output>
+					<br>
+					
+					<label for="camera_position_y">Camera Position (Y)</label>
+					<input type="range" id="camera_position_y_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_y_output.value = camera_position_y_input.value; main()">
+					<output name="camera_position_y" id="camera_position_y_output" value="camera_position_y_output.value">0</output>
+					<br>
+					
+					<label for="camera_position_z">Camera Position (Z)</label>
+					<input type="range" id="camera_position_z_input" min="-1" value="0" max="1" step = "0.1" oninput="camera_position_z_output.value = camera_position_z_input.value; main()">
+					<output name="camera_position_z" id="camera_position_z_output">0</output>
+				</form>
+			</td>
+			<td style="padding: 5px; border: 1px #28b463 solid;">
+				<form>
+					<label for="eye_position_x">Eye Position (X)</label>
+					<input type="range" id="eye_position_x_input" min="-20" value="3" max="20" step="0.5" oninput="eye_position_x_output.value = eye_position_x_input.value; main()">
+					<output name="eye_position_x" id="eye_position_x_output" value="eye_position_x_output.value">3</output>
+					<br>
+					
+					<label for="eye_position_y">Eye Position (Y)</label>
+					<input type="range" id="eye_position_y_input" min="-20" value="3" max="20" step="0.5" oninput="eye_position_y_output.value = eye_position_y_input.value; main()">
+					<output name="eye_position_y" id="eye_position_y_output" value="eye_position_y_output.value">3</output>
+					<br>
+					
+					<label for="eye_position_z">Eye Position (Z)</label>
+					<input type="range" id="eye_position_z_input" min="-20" value="7" max="20" step="0.5" oninput="eye_position_z_output.value = eye_position_z_input.value; main()">
+					<output name="eye_position_z" id="eye_position_z_output">7</output>
+				</form>
+			</td>
+		</tr>
+	</table>
 
 	
 
